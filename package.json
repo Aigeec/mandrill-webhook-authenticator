@@ -1,0 +1,44 @@
+{
+  "name": "mandrill-webhook-authenticator",
+  "version": "0.2.0",
+  "description": "Authenticates Madrill Inbound Webhook calls",
+  "main": "src/mandrill-webhook-authenticator.js",
+  "scripts": {
+    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
+    "lint": "./node_modules/jshint/bin/jshint --reporter ./node_modules/jshint-md-reporter/lib/reporter.js src > docs/jshint.md",
+    "jscs": "./node_modules/jscs/bin/jscs --reporter ./node_modules/jscs-md-reporter/src/reporter.js src > docs/jscs.md",
+    "jsdoc": "./node_modules/jsdoc-to-markdown/bin/cli.js 'src/**/*.js' > docs/api.md",
+    "docs": "npm run -s jsdoc && npm run -s lint && npm run -s jscs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aigeec/mandrill-webhook.git"
+  },
+  "keywords": [
+    "mandrill",
+    "inbound",
+    "webhook",
+    "authentication"
+  ],
+  "author": "Aigeec",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Aigeec/mandrill-webhook/issues"
+  },
+  "homepage": "https://github.com/Aigeec/mandrill-webhook",
+  "devDependencies": {
+    "chai": "~3.4.1",
+    "express": "~4.13.3",
+    "istanbul": "~0.4.2",
+    "jscs": "2.8.0",
+    "jscs-md-reporter": "^0.1.0",
+    "jsdoc-to-markdown": "^1.3.3",
+    "jshint": "2.9.1",
+    "jshint-md-reporter": "0.1.0",
+    "mocha": "~2.3.4",
+    "proxyquire": "~1.7.3",
+    "sinon": "~1.17.2",
+    "sinon-chai": "~2.8.0",
+    "supertest": "~1.1.0"
+  }
+}
