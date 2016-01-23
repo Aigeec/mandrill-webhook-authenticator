@@ -1,6 +1,6 @@
 mandrill-webhook-authenticator
 =========
-A small express middleware to authenticate Mandrill inbound webhooks
+A small express middleware to authenticate Mandrill inbound web-hooks
 
 ## Installation
 
@@ -35,9 +35,10 @@ var config = {
 ## Links
 
   [api documentation](./docs/api.md)
+
   [jscs Report](./docs/jscs.md)
+
   [jshint Report](./docs/jshint.md)
-  [Test Results])(./docs/test.md)
 
 ## Contributing
 
@@ -48,3 +49,9 @@ var config = {
 ## Release History
 
   Not yet released.
+
+## Legal Stuff
+
+  mandrill-webhook-authenticator is Copyright 2016 Aodhagán Collins. All Rights Reserved.
+
+  Distributed under [MIT License](https://tldrlegal.com/license/mit-license).
