@@ -1,6 +1,6 @@
 {
   "name": "mandrill-webhook-authenticator",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Authenticates Madrill Inbound Webhook calls",
   "main": "src/mandrill-webhook-authenticator.js",
   "scripts": {
