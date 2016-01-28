@@ -16,10 +16,10 @@ var authenticator = require('mandrill-webhook-authenticator');
 app.use(authenticator(options));
 ```
 
-  # options
+## Options
 
 ```javascript
-var config = {
+var options = {
   webhookAuthKey: 'webhooks_auth_key',
   domain: 'http://www.example.com'
 };
