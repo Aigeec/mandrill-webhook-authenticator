@@ -22,6 +22,7 @@ Simple express middleware module to authenticate Inbound Mandrill Webhook reques
     * [~MANDRILL_SIGNATURE_HEADER](#module_MandrillWebhookAuthenticator..MANDRILL_SIGNATURE_HEADER) : <code>string</code>
     * [~NOT_AUTHORIZED](#module_MandrillWebhookAuthenticator..NOT_AUTHORIZED) : <code>string</code>
     * [~FORBIDDEN](#module_MandrillWebhookAuthenticator..FORBIDDEN) : <code>string</code>
+    * [~OK](#module_MandrillWebhookAuthenticator..OK) : <code>string</code>
     * [~CONFIGURATION_ERROR](#module_MandrillWebhookAuthenticator..CONFIGURATION_ERROR) : <code>Error</code>
 
 <a name="module_MandrillWebhookAuthenticator..MANDRILL_SIGNATURE_HEADER"></a>
@@ -35,6 +36,9 @@ Mandrill Signature HTTP header
 <a name="module_MandrillWebhookAuthenticator..FORBIDDEN"></a>
 ### MandrillWebhookAuthenticator~FORBIDDEN : <code>string</code>
 **Kind**: inner constant of <code>[MandrillWebhookAuthenticator](#module_MandrillWebhookAuthenticator)</code>  
+<a name="module_MandrillWebhookAuthenticator..OK"></a>
+### MandrillWebhookAuthenticator~OK : <code>string</code>
+**Kind**: inner constant of <code>[MandrillWebhookAuthenticator](#module_MandrillWebhookAuthenticator)</code>  
 <a name="module_MandrillWebhookAuthenticator..CONFIGURATION_ERROR"></a>
 ### MandrillWebhookAuthenticator~CONFIGURATION_ERROR : <code>Error</code>
 **Kind**: inner constant of <code>[MandrillWebhookAuthenticator](#module_MandrillWebhookAuthenticator)</code>  
@@ -47,7 +51,8 @@ Mandrill Signature HTTP header
     * [~isValidMandrillSignature(fullUrl, body, key, signature)](#Authenticator..isValidMandrillSignature) ⇒ <code>boolean</code>
     * [~sortPostParameters(body)](#Authenticator..sortPostParameters) ⇒ <code>string</code>
     * [~getHash(text, key)](#Authenticator..getHash)
-    * [~respondWith(res, status, message)](#Authenticator..respondWith)
+    * [~responder(res, status, message)](#Authenticator..responder)
+    * [~validator(fullUrl, body, signature)](#Authenticator..validator) ⇒ <code>function</code>
     * [~authenticate(req, res, next)](#Authenticator..authenticate)
 
 <a name="new_Authenticator_new"></a>
@@ -64,7 +69,8 @@ Creates the middleware function to be used to authenticate the inbound Mandrill 
 
 <a name="Authenticator..isValidMandrillSignature"></a>
 ### Authenticator~isValidMandrillSignature(fullUrl, body, key, signature) ⇒ <code>boolean</code>
-Generate the signature from the full url and sorted post data to compart to the one provided
+Generate the signature from the full url and sorted post data to compart to the one provided.
+When mandrill is testing the existence of a url it can send a post request with no events and key set to 'test-webhook'.
 
 **Kind**: inner method of <code>[Authenticator](#Authenticator)</code>  
 **Returns**: <code>boolean</code> - True is signature is valid otherwise false  
@@ -98,8 +104,8 @@ Hash the resulting string with HMAC-SHA1, using your webhook's authentication ke
 | text | <code>string</code> | Full URL and sorted post data |
 | key | <code>string</code> | Mandrill Inbound Webhook auth key |
 
-<a name="Authenticator..respondWith"></a>
-### Authenticator~respondWith(res, status, message)
+<a name="Authenticator..responder"></a>
+### Authenticator~responder(res, status, message)
 Utility function to set http reponse status and message, uses HTTP compatible properties so express is not required
 
 **Kind**: inner method of <code>[Authenticator](#Authenticator)</code>  
@@ -110,9 +116,22 @@ Utility function to set http reponse status and message, uses HTTP compatible pr
 | status | <code>int</code> | HTTP status code |
 | message | <code>string</code> | Response body |
 
+<a name="Authenticator..validator"></a>
+### Authenticator~validator(fullUrl, body, signature) ⇒ <code>function</code>
+Utility function to preset the calls to the signature validator
+
+**Kind**: inner method of <code>[Authenticator](#Authenticator)</code>  
+**Returns**: <code>function</code> - a fuction that takes the key and call isValidMandrillSignature  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| fullUrl | <code>string</code> | domain and url of request - should match exactly the url specified in the webhook |
+| body | <code>string</code> | request body |
+| signature | <code>string</code> | signature provided in the 'x-mandrill-signature' header |
+
 <a name="Authenticator..authenticate"></a>
 ### Authenticator~authenticate(req, res, next)
-Express middleware compatible function to process requests and only continure if the signature is valid. It does not update the request.
+Express middleware compatible function to process requests and only continure if the signature is valid. Will return 200 if the request is a test request. It does not update the request.
 
 **Kind**: inner method of <code>[Authenticator](#Authenticator)</code>  
 

@@ -126,7 +126,7 @@
     };
 
     /**
-    * Express middleware compatible function to process requests and only continure if the signature is valid. It does not update the request.
+    * Express middleware compatible function to process requests and only continure if the signature is valid. Will return 200 if the request is a test request. It does not update the request.
     * @param { Request } req
     * @param { Response } res
     * @param { function } next
