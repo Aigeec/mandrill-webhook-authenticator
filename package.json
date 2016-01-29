@@ -1,6 +1,6 @@
 {
   "name": "mandrill-webhook-authenticator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Authenticates Madrill Inbound Webhook calls",
   "main": "src/mandrill-webhook-authenticator.js",
   "scripts": {
@@ -39,8 +39,6 @@
     "jshint-md-reporter": "0.1.0",
     "mocha": "~2.3.4",
     "proxyquire": "~1.7.3",
-    "sinon": "~1.17.2",
-    "sinon-chai": "~2.8.0",
     "supertest": "~1.1.0",
     "coveralls": "~2.11.6"
   }
