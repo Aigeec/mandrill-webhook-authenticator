@@ -24,6 +24,11 @@
   var FORBIDDEN = 'Forbidden';
 
   /**
+  * @const { string } OK
+  */
+  var OK = 'Ok';
+
+  /**
   * @const { Error } CONFIGURATION_ERROR
   */
   var CONFIGURATION_ERROR = new Error('Configuration is incomplete, please check documentation');
@@ -54,7 +59,8 @@
     }
 
     /**
-    * Generate the signature from the full url and sorted post data to compart to the one provided
+    * Generate the signature from the full url and sorted post data to compart to the one provided.
+    * When mandrill is testing the existence of a url it can send a post request with no events and key set to 'test-webhook'.
     * @param { string } fullUrl - domain and url of request - should match exactly the url specified in the webhook
     * @param { string } body - request body
     * @param { string } key - Mandrill Inbound Webhook auth key
@@ -99,9 +105,24 @@
     * @param { int } status - HTTP status code
     * @param { string } message - Response body
     */
-    var respondWith = function(res, status, message) {
-      res.writeHead(status);
-      res.end(message);
+    var responder = function(res) {
+      return function(status, message) {
+        res.writeHead(status);
+        res.end(message);
+      };
+    };
+
+    /**
+    * Utility function to preset the calls to the signature validator
+    * @param { string } fullUrl - domain and url of request - should match exactly the url specified in the webhook
+    * @param { string } body - request body
+    * @param { string } signature - signature provided in the 'x-mandrill-signature' header
+    * @returns { function } a fuction that takes the key and call isValidMandrillSignature
+    */
+    var validator = function(fullUrl, body, signature) {
+      return function(key) {
+        return isValidMandrillSignature(fullUrl, body, key, signature);
+      };
     };
 
     /**
@@ -111,10 +132,18 @@
     * @param { function } next
     */
     var authenticate = function(req, res, next) {
-      if (!req.headers[MANDRILL_SIGNATURE_HEADER]) {
-        respondWith(res, 401, NOT_AUTHORIZED);
-      }else if (!isValidMandrillSignature(options.domain + req.url, req.body, options.webhookAuthKey, req.headers[MANDRILL_SIGNATURE_HEADER])) {
-        respondWith(res, 403, FORBIDDEN);
+
+      var signature = req.headers[MANDRILL_SIGNATURE_HEADER];
+      var fullUrl = options.domain + req.url;
+      var isValid = validator(fullUrl, req.body, signature);
+      var respondWith = responder(res);
+
+      if (!signature) {
+        respondWith(401, NOT_AUTHORIZED);
+      }else if (req.body && req.body.mandrill_events === '[]' && isValid('test-webhook')) {
+        respondWith(200, OK);
+      }else if (!isValid(options.webhookAuthKey)) {
+        respondWith(403, FORBIDDEN);
       } else {
         next();
       }

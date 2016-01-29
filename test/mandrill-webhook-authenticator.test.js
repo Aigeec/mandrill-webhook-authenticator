@@ -1,7 +1,12 @@
 (function() {
   'use strict';
 
-  var expect = require('chai').expect;
+  var chai = require('chai');
+  var sinon = require('sinon');
+  var sinonChai = require('sinon-chai');
+  var expect = chai.expect;
+  chai.use(sinonChai);
+
   var request = require('supertest');
   var express = require('express');
 
@@ -52,6 +57,7 @@
       it('Invalid header: Forbidden', function(done) {
         request(app)
         .post('/webhook')
+        .send()
         .set('X-Mandrill-Signature', 'invalidSignature')
         .expect(403, done);
       });
@@ -64,6 +70,28 @@
         var authenticate = authenticator({ domain: 'http://test/com', webhookAuthKey: 'some_auth_key', });
 
         authenticate(req, {}, done);
+      });
+
+      var getMockedResult = function(res) {
+        res = res || {};
+        res.writeHead = sinon.spy();
+        res.end = sinon.spy();
+        return res;
+      };
+
+      it('should return 200 if the request is a test', function() {
+        var res = getMockedResult();
+        var req = { url:'/webhook', headers: {}, body: {} };
+        var nextSpy = sinon.spy();
+        req.headers['x-mandrill-signature'] = 'uZmPxivd5e9pJbRpbNUUt3B13NQ=';
+        req.body.mandrill_events = '[]';
+
+        var authenticate = authenticator({ domain: 'http://test/com', webhookAuthKey: 'some_auth_key', });
+        authenticate(req, res, nextSpy);
+
+        expect(res.writeHead.getCall(0).args[0]).to.equal(200);
+        expect(res.end.getCall(0).args[0]).to.equal('Ok');
+        expect(nextSpy.called).to.be.false;
       });
 
     });
